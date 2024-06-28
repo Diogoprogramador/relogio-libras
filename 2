@@ -1,0 +1,84 @@
+import tkinter as tk
+from tkinter import ttk
+import time
+import math
+
+# Dicionário com emojis representando os números de 1 a 12 em Libras
+numeros_libras = {
+    1: "👆",
+    2: "✌️",
+    3: "👌",
+    4: "👍",
+    5: "🖐️",
+    6: "👊",
+    7: "☝️",
+    8: "🤘",
+    9: "🤙",
+    10: "🤚",
+    11: "🖖",
+    12: "🤟"
+}
+
+# Função para desenhar o relógio de parede em Libras
+def desenhar_relogio(canvas, centro_x, centro_y, tamanho_lado, hora_atual, minuto_atual, segundo_atual):
+    # Desenhar números em Libras
+    angulo_inicial = -90
+    angulo = 360 / 12
+    for i in range(12):
+        angulo_rad = math.radians(angulo_inicial + angulo * i)
+        x = centro_x + tamanho_lado * 0.8 * math.cos(angulo_rad)
+        y = centro_y + tamanho_lado * 0.8 * math.sin(angulo_rad)
+        canvas.create_text(x, y, text=numeros_libras[i + 1], font=("Arial", 24, "bold"))
+
+    # Desenhar ponteiro das horas
+    angulo_hora = -90 + hora_atual * (360 / 12)
+    angulo_hora_rad = math.radians(angulo_hora)
+    tamanho_ponteiro_hora = tamanho_lado * 0.5
+    x_ponteiro_hora = centro_x + tamanho_ponteiro_hora * math.cos(angulo_hora_rad)
+    y_ponteiro_hora = centro_y + tamanho_ponteiro_hora * math.sin(angulo_hora_rad)
+    canvas.create_line(centro_x, centro_y, x_ponteiro_hora, y_ponteiro_hora, width=3, fill='orange')
+
+    # Desenhar ponteiro dos minutos
+    angulo_minuto = -90 + minuto_atual * (360 / 60)
+    angulo_minuto_rad = math.radians(angulo_minuto)
+    tamanho_ponteiro_minuto = tamanho_lado * 0.7
+    x_ponteiro_minuto = centro_x + tamanho_ponteiro_minuto * math.cos(angulo_minuto_rad)
+    y_ponteiro_minuto = centro_y + tamanho_ponteiro_minuto * math.sin(angulo_minuto_rad)
+    canvas.create_line(centro_x, centro_y, x_ponteiro_minuto, y_ponteiro_minuto, width=2, fill='orange')
+
+    # Desenhar ponteiro dos segundos
+    angulo_segundo = -90 + segundo_atual * (360 / 60)
+    angulo_segundo_rad = math.radians(angulo_segundo)
+    tamanho_ponteiro_segundo = tamanho_lado * 0.9
+    x_ponteiro_segundo = centro_x + tamanho_ponteiro_segundo * math.cos(angulo_segundo_rad)
+    y_ponteiro_segundo = centro_y + tamanho_ponteiro_segundo * math.sin(angulo_segundo_rad)
+    canvas.create_line(centro_x, centro_y, x_ponteiro_segundo, y_ponteiro_segundo, width=1, fill='red')
+
+# Função para atualizar o relógio
+def atualizar_relogio():
+    tempo_atual = time.localtime()
+    hora = tempo_atual.tm_hour % 12
+    minuto = tempo_atual.tm_min
+    segundo = tempo_atual.tm_sec
+
+    # Atualiza a exibição do relógio de parede em Libras
+    canvas.delete("all")
+    desenhar_relogio(canvas, 200, 200, 150, hora, minuto, segundo)
+
+    root.after(1000, atualizar_relogio)
+
+# Configuração da janela
+root = tk.Tk()
+root.title("Relógio de Parede em Libras")
+root.geometry("400x400")
+root.configure(bg='white')
+
+# Canvas para desenhar o relógio
+canvas = tk.Canvas(root, width=400, height=400, bg='white')
+canvas.pack()
+
+# Chamada inicial para iniciar o relógio
+atualizar_relogio()
+
+# Loop principal
+root.mainloop()
